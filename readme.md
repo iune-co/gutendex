@@ -33,6 +33,7 @@ Installation
 
 See the [installation guide](https://github.com/garethbjohnson/gutendex/wiki/Installation-Guide).
 
+**Note**: If you're upgrading from the original gutendex, the `Person` model now includes a `gutenberg_id` field. You'll need to re-run `updatecatalog` after migrating to populate this field correctly.
 
 API
 ---
@@ -134,6 +135,16 @@ number. Error responses will appear in this format:
 ```
 
 
+### Author
+
+Individual authors can be found at `/authors/<id>`, where `<id>` is the author's Project Gutenberg ID number.
+
+
+### Author's books
+
+Books written by a specific author can be found at `/authors/<id>/books`, where `<id>` is the author's Project Gutenberg ID number. At this moment, books are returned by popularity, with the most popular books at the top.
+
+
 ### API Objects
 
 
@@ -175,6 +186,7 @@ Types of JSON objects served by Gutendex are given below.
 
 ```
 {
+  "id": <number>,
   "birth_year": <number or null>,
   "death_year": <number or null>,
   "name": <string>

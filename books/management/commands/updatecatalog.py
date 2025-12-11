@@ -229,6 +229,12 @@ def put_catalog_in_db():
 
 
 def get_or_create_person(data):
+    # Find by gutenberg_id first, if it exists
+    if data.get('gutenberg_id'):
+        person = Person.objects.filter(gutenberg_id=data['gutenberg_id'])
+        if person.exists():
+            return person[0]
+
     person = Person.objects.filter(
         name=data['name'],
         birth_year=data['birth'],
@@ -241,7 +247,8 @@ def get_or_create_person(data):
         person = Person.objects.create(
             name=data['name'],
             birth_year=data['birth'],
-            death_year=data['death']
+            death_year=data['death'],
+            gutenberg_id=data.get('gutenberg_id')
         )
     
     return person

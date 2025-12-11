@@ -1,6 +1,8 @@
 from django.db.models import Q
 
 from rest_framework import exceptions as drf_exceptions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
@@ -99,3 +101,25 @@ class BookViewSet(viewsets.ModelViewSet):
             )
 
         return queryset.distinct()
+
+class AuthorViewSet(viewsets.ReadOnlyModelViewSet):
+    """ API endpoint for viewing authors. """
+
+    lookup_field = 'gutenberg_id'
+    queryset = Person.objects.filter(gutenberg_id__isnull=False)
+    serializer_class = PersonSerializer
+
+    @action(detail=True, methods=['get'])
+    def books(self, request, gutenberg_id=None):
+        author = self.get_object()
+
+        # Get books by this author, ordered by popularity
+        books = Book.objects.filter(authors=author).order_by('-download_count')
+
+        page = self.paginate_queryset(books)
+        if page is not None:
+            serializer = BookSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)

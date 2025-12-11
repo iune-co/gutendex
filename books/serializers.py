@@ -22,9 +22,14 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class PersonSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+
     class Meta:
         model = Person
-        fields = ('name', 'birth_year', 'death_year')
+        fields = ('id', 'name', 'birth_year', 'death_year')
+
+    def get_id(self, person):
+        return person.gutenberg_id
 
 
 class SubjectSerializer(serializers.ModelSerializer):

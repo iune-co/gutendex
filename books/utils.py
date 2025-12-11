@@ -160,7 +160,18 @@ def get_person(person_element):
         'birth': None,
         'death': None,
         'name': safe_unicode(name.text, encoding='UTF-8'),
+        'gutenberg_id': None,
     }
+    # Extract gutenberg agent ID from rdf:about attribute
+    agent = person_element.find('.//{%(pg)s}agent' % NAMESPACES)
+    if agent is not None:
+        about = agent.get('{%(rdf)s}about' % NAMESPACES)
+        if about:
+            # Extract ID from "2009/agents/61" format
+            import re
+            match = re.search(r'/agents/(\d+)$', about)
+            if match:
+                person['gutenberg_id'] = int(match.group(1))
 
     birth = person_element.find('.//{%(pg)s}birthdate' % NAMESPACES)
 
